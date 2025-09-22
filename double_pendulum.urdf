@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<robot name="double_pendulum">
+
+  <!-- Base link (anchor point) -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.1 0.1 0.1"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.01" iyy="0.01" izz="0.01"
+               ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+  </link>
+
+  <!-- First pendulum link -->
+  <link name="link1">
+    <visual>
+      <!-- Cylinder origin is centered, so shift it down by half length -->
+      <origin xyz="0 0 -0.5"/>
+      <geometry>
+        <cylinder radius="0.05" length="1.0"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.5"/>
+      <geometry>
+        <cylinder radius="0.05" length="1.0"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.02" iyy="0.02" izz="0.001"
+               ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 1 (revolute) -->
+  <joint name="joint1" type="revolute">
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <origin xyz="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="10" velocity="5" lower="-3.14" upper="3.14"/>
+  </joint>
+
+  <!-- Second pendulum link -->
+  <link name="link2">
+    <visual>
+      <origin xyz="0 0 -0.5"/>
+      <geometry>
+        <cylinder radius="0.05" length="1.0"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.5"/>
+      <geometry>
+        <cylinder radius="0.05" length="1.0"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.02" iyy="0.02" izz="0.001"
+               ixy="0.0" ixz="0.0" iyz="0.0"/>
+    </inertial>
+  </link>
+
+  <!-- Joint 2 (revolute) -->
+  <joint name="joint2" type="revolute">
+    <parent link="link1"/>
+    <child link="link2"/>
+    <!-- Attach at the bottom of link1 -->
+    <origin xyz="0 0 -1.0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="10" velocity="5" lower="-3.14" upper="3.14"/>
+  </joint>
+
+</robot>

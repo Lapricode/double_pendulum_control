@@ -3,6 +3,7 @@ import time
 import json
 import math
 from dataclasses import dataclass
+from typing import Tuple, List, Union, Optional
 
 @dataclass
 class UserInfo:
@@ -14,7 +15,7 @@ class UserInfo:
     refil_interval: int
     valid_from: int
     valid_until: int
-    experiment_types: [str]
+    experiment_types: List[str]
 
 class Client:
     def __init__(self) -> None:
@@ -36,7 +37,7 @@ class Client:
             raise RuntimeError(f"Invalid baudrate: {can_baud_rate_config}, should be 1, 2, 5 or 8")
         self.candle: pyCandle.Candle = \
             pyCandle.Candle(can_baud_rate, True, pyCandle.USB)
-        self.all_motor_ids: list[int] = self.candle.ping(can_baud_rate)
+        self.all_motor_ids: List[int] = self.candle.ping(can_baud_rate)
 
         for joint in self._robot_joints():
             motor_id = joint["id"]
@@ -58,7 +59,7 @@ class Client:
         experiment_type: str = "",
         requested_time: float = 0.0,
         record: bool = False
-    ) -> tuple[str, str]:
+    ) -> Tuple[str, str]:
         self.candle.begin()
         return "", ""
 
@@ -79,10 +80,10 @@ class Client:
             experiment_types = []
         )
 
-    def get_joint_names(self, session_token: str = "") -> list[str]:
+    def get_joint_names(self, session_token: str = "") -> List[str]:
         return list(map(lambda j: j["name"], self._robot_joints()))
 
-    def get_position(self, session_token: str = "") -> list[float]:
+    def get_position(self, session_token: str = "") -> List[float]:
         res: list[float] = []
         for joint in self._robot_joints():
             motor_id = joint["id"]
@@ -93,7 +94,7 @@ class Client:
             res = res + [pos]
         return self._prepare_output_data(res)
  
-    def get_velocity(self, session_token: str = "") -> list[float]:
+    def get_velocity(self, session_token: str = "") -> List[float]:
         res: list[float] = []
         for joint in self._robot_joints():
             motor_id = joint["id"]
@@ -104,7 +105,7 @@ class Client:
             res = res + [vel]
         return self._prepare_output_data(res)
 
-    def get_torque(self, session_token: str = "") -> list[float]:
+    def get_torque(self, session_token: str = "") -> List[float]:
         res: list[float] = []
         for joint in self._robot_joints():
             motor_id = joint["id"]
@@ -115,7 +116,7 @@ class Client:
             res = res + [torque]
         return self._prepare_output_data(res)
 
-    def set_position(self, positions: list[float | None] | float, session_token: str = ""):
+    def set_position(self, positions: Union[List[Optional[float]], float], session_token: str = ""):
         positions = self._prepare_actuator_data(positions)
         for position, joint in zip(positions, self._robot_joints()):
             if position is None:
@@ -126,7 +127,7 @@ class Client:
             if pos_limit < abs(position):
                print(f"Position clamped from {position} to {clamped_position}")
 
-    def set_velocity(self, velocities: list[float | None] | float, session_token: str = ""):
+    def set_velocity(self, velocities: Union[List[Optional[float]], float], session_token: str = ""):
         velocities = self._prepare_actuator_data(velocities)
         for velocity, joint in zip(velocities, self._robot_joints()):
             if velocity is None:
@@ -137,7 +138,7 @@ class Client:
             if vel_limit < abs(velocity):
                 print(f"Velocity clamped from {velocity} to {clamped_velocity}")
 
-    def set_torque(self, torques: list[float | None] | float, session_token: str = ""):
+    def set_torque(self, torques: Union[List[Optional[float]], float], session_token: str = ""):
         torques = self._prepare_actuator_data(torques)
         for torque, joint in zip(torques, self._robot_joints()):
             if torque is None:
@@ -150,8 +151,8 @@ class Client:
 
     def set_impedance_controller_params(
         self,
-        kp: float | list[float],
-        kd: float | list[float],
+        kp: Union[float, List[float]],
+        kd: Union[float, List[float]],
         session_token: str = ""
     ):
         kp = self._prepare_actuator_data(kp)
@@ -184,8 +185,8 @@ class Client:
 
     def _prepare_actuator_data(
         self,
-        data: float | list[float | None]
-    ) -> list[float | None]:
+        data: Union[float, List[Optional[float]]]
+    ) -> List[Optional[float]]:
         if not isinstance(data, list):
             data = [data]
         for d in data:
@@ -195,7 +196,7 @@ class Client:
             self._raise_exception(f"Wrong number of arguments supplied; Expected {len(self._robot_joints())}, got {len(data)}")
         return data
 
-    def _prepare_output_data(self, data: list[float]) -> list[float] | float:
+    def _prepare_output_data(self, data: List[float]) -> Union[List[float], float]:
         if len(data) == 1:
             return data[0]
         return data
