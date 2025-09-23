@@ -7,7 +7,7 @@ import sys
 candle = pyCandle.Candle(pyCandle.CAN_BAUD_1M, True, pyCandle.USB)
 
 # ping to search for motor drives
-motor_ids = candle.ping(pyCandle.CAN_BAUD_1M)  
+motor_ids = candle.ping(pyCandle.CAN_BAUD_1M)
 print(f"Motor ids: {motor_ids}")
 if len(motor_ids) == 0: sys.exit("EXIT FAILURE")
 
