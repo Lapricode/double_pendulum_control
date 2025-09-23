@@ -32,11 +32,17 @@ candle.begin()
 
 motor1 = candle.md80s[1]
 motor2 = candle.md80s[0]
+motor1.setImpedanceControllerParams(0.2, 0.02)
+motor2.setImpedanceControllerParams(0.2, 0.02)
 for i in range(1000):
-    for md in candle.md80s:
-        md.setTargetPosition(math.pi * math.sin(t))
+    motor1.setTargetPosition(math.pi * math.sin(t))
+    motor2.setTargetPosition(math.pi * math.sin(t))
     # motor1.setTargetPosition(math.pi)
-    # motor2.setTargetPosition(-math.pi)
+    # motor2.setTargetPosition(0.0)
+    # motor1.setTargetPosition(math.pi)
+    # motor2.setTargetPosition(math.pi)
+    # motor1.setTargetPosition(0.0)
+    # motor2.setTargetPosition(math.pi)
     t += dt
     time.sleep(dt)
     
